@@ -33,7 +33,7 @@ void loop() {
   mpu_get_gyro_reg(gyro, NULL);
   mpu_get_accel_reg(accel, NULL);
  /* do {
-    res = mpu_read_fifo(gyro,accel,NULL,&sensors,&more);
+    res = dmp_read_fifo(gyro,accel,NULL,&sensors,&more);
     Serial.print(res);
   } while (more>1);*/
   Serial.println();
