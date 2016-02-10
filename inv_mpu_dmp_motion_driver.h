@@ -55,50 +55,50 @@ extern "C"
 #define INV_WXYZ_QUAT       (0x100)
 
 /* Set up functions. */
-int dmp_load_motion_driver_firmware(void);
-int dmp_set_fifo_rate(unsigned short rate);
-int dmp_get_fifo_rate(unsigned short *rate);
-int dmp_enable_feature(unsigned short mask);
-int dmp_get_enabled_features(unsigned short *mask);
-int dmp_set_interrupt_mode(unsigned char mode);
-int dmp_set_orientation(unsigned short orient);
-int dmp_set_gyro_bias(long *bias);
-int dmp_set_accel_bias(long *bias);
+int8_t dmp_load_motion_driver_firmware(void);
+int8_t dmp_set_fifo_rate(unsigned short rate);
+int8_t dmp_get_fifo_rate(unsigned short *rate);
+int8_t dmp_enable_feature(unsigned short mask);
+int8_t dmp_get_enabled_features(unsigned short *mask);
+int8_t dmp_set_interrupt_mode(unsigned char mode);
+int8_t dmp_set_orientation(unsigned short orient);
+int8_t dmp_set_gyro_bias(long *bias);
+int8_t dmp_set_accel_bias(long *bias);
 
 /* LP quaternion functions. */
-int dmp_enable_lp_quat(unsigned char enable);
-int dmp_enable_6x_lp_quat(unsigned char enable);
+int8_t dmp_enable_lp_quat(unsigned char enable);
+int8_t dmp_enable_6x_lp_quat(unsigned char enable);
 
 /* DMP gyro calibration functions. */
-int dmp_enable_gyro_cal(unsigned char enable);
+int8_t dmp_enable_gyro_cal(unsigned char enable);
 
 /* Read function. This function should be called whenever the MPU interrupt is
  * detected.
  */
-int dmp_read_fifo(short *gyro, short *accel, long *quat,
+int8_t dmp_read_fifo(short *gyro, short *accel, long *quat,
     unsigned long *timestamp, short *sensors, unsigned char *more);
 
 
 #ifdef MPU_EXTRAS
 /* Tap functions. */
-int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char));
-int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh);
-int dmp_set_tap_axes(unsigned char axis);
-int dmp_set_tap_count(unsigned char min_taps);
-int dmp_set_tap_time(unsigned short time);
-int dmp_set_tap_time_multi(unsigned short time);
-int dmp_set_shake_reject_thresh(long sf, unsigned short thresh);
-int dmp_set_shake_reject_time(unsigned short time);
-int dmp_set_shake_reject_timeout(unsigned short time);
+int8_t dmp_register_tap_cb(void (*func)(unsigned char, unsigned char));
+int8_t dmp_set_tap_thresh(unsigned char axis, unsigned short thresh);
+int8_t dmp_set_tap_axes(unsigned char axis);
+int8_t dmp_set_tap_count(unsigned char min_taps);
+int8_t dmp_set_tap_time(unsigned short time);
+int8_t dmp_set_tap_time_multi(unsigned short time);
+int8_t dmp_set_shake_reject_thresh(long sf, unsigned short thresh);
+int8_t dmp_set_shake_reject_time(unsigned short time);
+int8_t dmp_set_shake_reject_timeout(unsigned short time);
 
 /* Android orientation functions. */
-int dmp_register_android_orient_cb(void (*func)(unsigned char));
+int8_t dmp_register_android_orient_cb(void (*func)(unsigned char));
 
 /* Pedometer functions. */
-int dmp_get_pedometer_step_count(unsigned long *count);
-int dmp_set_pedometer_step_count(unsigned long count);
-int dmp_get_pedometer_walk_time(unsigned long *time);
-int dmp_set_pedometer_walk_time(unsigned long time);
+int8_t dmp_get_pedometer_step_count(unsigned long *count);
+int8_t dmp_set_pedometer_step_count(unsigned long count);
+int8_t dmp_get_pedometer_walk_time(unsigned long *time);
+int8_t dmp_set_pedometer_walk_time(unsigned long time);
 #endif //MPU_EXTRAS
 
 #ifdef __cplusplus

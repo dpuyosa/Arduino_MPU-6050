@@ -66,7 +66,7 @@
 /* #warning "No compass = less profit for Invensense. Lame." */
 #endif
 
-static int set_int_enable(unsigned char enable);
+static int8_t set_int_enable(unsigned char enable);
 
 /* Hardware registers needed by driver. */
 struct gyro_reg_s {
@@ -530,7 +530,7 @@ static struct gyro_state_s st = {
 #endif
 
 #ifdef AK89xx_SECONDARY
-static int setup_compass(void);
+static int8_t setup_compass(void);
 #define MAX_COMPASS_SAMPLE_RATE (100)
 #endif
 
@@ -541,7 +541,7 @@ static int setup_compass(void);
  *  @param[in]  enable      1 to enable interrupt.
  *  @return     0 if successful.
  */
-static int set_int_enable(unsigned char enable)
+static int8_t set_int_enable(unsigned char enable)
 {
     unsigned char tmp;
 
@@ -573,7 +573,7 @@ static int set_int_enable(unsigned char enable)
  *  @brief      Register dump for testing.
  *  @return     0 if successful.
  */
-int mpu_reg_dump(void)
+int8_t mpu_reg_dump(void)
 {
     unsigned char ii;
     unsigned char data;
@@ -595,7 +595,7 @@ int mpu_reg_dump(void)
  *  @param[out] data    Register data.
  *  @return     0 if successful.
  */
-int mpu_read_reg(unsigned char reg, unsigned char *data)
+int8_t mpu_read_reg(unsigned char reg, unsigned char *data)
 {
     if (reg == st.reg->fifo_r_w || reg == st.reg->mem_r_w)
         return -1;
@@ -617,7 +617,7 @@ int mpu_read_reg(unsigned char reg, unsigned char *data)
  *  @param[in]  int_param   Platform-specific parameters to interrupt API.
  *  @return     0 if successful.
  */
-int mpu_init(struct int_param_s *int_param)
+int8_t mpu_init(struct int_param_s *int_param)
 {
     unsigned char data[6];
 
@@ -709,7 +709,7 @@ int mpu_init(struct int_param_s *int_param)
  *                          accel mode.
  *  @return     0 if successful.
  */
-int mpu_lp_accel_mode(unsigned char rate)
+int8_t mpu_lp_accel_mode(unsigned char rate)
 {
     unsigned char tmp[2];
 
@@ -793,7 +793,7 @@ int mpu_lp_accel_mode(unsigned char rate)
  *  @param[out] timestamp   Timestamp in milliseconds. Null if not needed.
  *  @return     0 if successful.
  */
-int mpu_get_gyro_reg(short *data, unsigned long *timestamp)
+int8_t mpu_get_gyro_reg(short *data, unsigned long *timestamp)
 {
     unsigned char tmp[6];
 
@@ -816,7 +816,7 @@ int mpu_get_gyro_reg(short *data, unsigned long *timestamp)
  *  @param[out] timestamp   Timestamp in milliseconds. Null if not needed.
  *  @return     0 if successful.
  */
-int mpu_get_accel_reg(short *data, unsigned long *timestamp)
+int8_t mpu_get_accel_reg(short *data, unsigned long *timestamp)
 {
     unsigned char tmp[6];
 
@@ -839,7 +839,7 @@ int mpu_get_accel_reg(short *data, unsigned long *timestamp)
  *  @param[out] timestamp   Timestamp in milliseconds. Null if not needed.
  *  @return     0 if successful.
  */
-int mpu_get_temperature(long *data, unsigned long *timestamp)
+int8_t mpu_get_temperature(long *data, unsigned long *timestamp)
 {
     unsigned char tmp[2];
     short raw;
@@ -865,7 +865,7 @@ int mpu_get_temperature(long *data, unsigned long *timestamp)
  *  @param[in]  accel_bias  returned structure with the accel bias
  *  @return     0 if successful.
  */
-int mpu_read_6500_accel_bias(long *accel_bias) {
+int8_t mpu_read_6500_accel_bias(long *accel_bias) {
 	unsigned char data[6];
 	if (i2c_read(st.hw->addr, 0x77, 2, &data[0]))
 		return -1;
@@ -887,7 +887,7 @@ int mpu_read_6500_accel_bias(long *accel_bias) {
  *  @param[in]  accel_bias  returned structure with the accel bias
  *  @return     0 if successful.
  */
-int mpu_read_6050_accel_bias(long *accel_bias) {
+int8_t mpu_read_6050_accel_bias(long *accel_bias) {
 	unsigned char data[6];
 	if (i2c_read(st.hw->addr, 0x06, 2, &data[0]))
 		return -1;
@@ -901,7 +901,7 @@ int mpu_read_6050_accel_bias(long *accel_bias) {
 	return 0;
 }
 
-int mpu_read_gyro_bias(long *gyro_bias) {
+int8_t mpu_read_gyro_bias(long *gyro_bias) {
 	unsigned char data[6];
 	if (i2c_read(st.hw->addr, 0x13, 2, &data[0]))
 		return -1;
@@ -923,10 +923,10 @@ int mpu_read_gyro_bias(long *gyro_bias) {
  *  @param[in]  gyro_bias  New biases.
  *  @return     0 if successful.
  */
-int mpu_set_gyro_bias_reg(long *gyro_bias)
+int8_t mpu_set_gyro_bias_reg(long *gyro_bias)
 {
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
-    int i=0;
+    int8_t i=0;
     for(i=0;i<3;i++) {
     	gyro_bias[i]= (-gyro_bias[i]);
     }
@@ -953,7 +953,7 @@ int mpu_set_gyro_bias_reg(long *gyro_bias)
  *  @param[in]  accel_bias  New biases.
  *  @return     0 if successful.
  */
-int mpu_set_accel_bias_6050_reg(const long *accel_bias)
+int8_t mpu_set_accel_bias_6050_reg(const long *accel_bias)
 {
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
     long accel_reg_bias[3] = {0, 0, 0};
@@ -1003,7 +1003,7 @@ int mpu_set_accel_bias_6050_reg(const long *accel_bias)
  *  @param[in]  accel_bias  New biases.
  *  @return     0 if successful.
  */
-int mpu_set_accel_bias_6500_reg(const long *accel_bias)
+int8_t mpu_set_accel_bias_6500_reg(const long *accel_bias)
 {
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
     long accel_reg_bias[3] = {0, 0, 0};
@@ -1049,7 +1049,7 @@ int mpu_set_accel_bias_6500_reg(const long *accel_bias)
  *  @brief  Reset FIFO read/write pointers.
  *  @return 0 if successful.
  */
-int mpu_reset_fifo(void)
+int8_t mpu_reset_fifo(void)
 {
     unsigned char data;
 
@@ -1111,7 +1111,7 @@ int mpu_reset_fifo(void)
  *  @param[out] fsr Current full-scale range.
  *  @return     0 if successful.
  */
-int mpu_get_gyro_fsr(unsigned short *fsr)
+int8_t mpu_get_gyro_fsr(unsigned short *fsr)
 {
     switch (st.chip_cfg.gyro_fsr) {
     case INV_FSR_250DPS:
@@ -1138,7 +1138,7 @@ int mpu_get_gyro_fsr(unsigned short *fsr)
  *  @param[in]  fsr Desired full-scale range.
  *  @return     0 if successful.
  */
-int mpu_set_gyro_fsr(unsigned short fsr)
+int8_t mpu_set_gyro_fsr(unsigned short fsr)
 {
     unsigned char data;
 
@@ -1175,7 +1175,7 @@ int mpu_set_gyro_fsr(unsigned short fsr)
  *  @param[out] fsr Current full-scale range.
  *  @return     0 if successful.
  */
-int mpu_get_accel_fsr(unsigned char *fsr)
+int8_t mpu_get_accel_fsr(unsigned char *fsr)
 {
     switch (st.chip_cfg.accel_fsr) {
     case INV_FSR_2G:
@@ -1203,7 +1203,7 @@ int mpu_get_accel_fsr(unsigned char *fsr)
  *  @param[in]  fsr Desired full-scale range.
  *  @return     0 if successful.
  */
-int mpu_set_accel_fsr(unsigned char fsr)
+int8_t mpu_set_accel_fsr(unsigned char fsr)
 {
     unsigned char data;
 
@@ -1240,7 +1240,7 @@ int mpu_set_accel_fsr(unsigned char fsr)
  *  @param[out] lpf Current LPF setting.
  *  0 if successful.
  */
-int mpu_get_lpf(unsigned short *lpf)
+int8_t mpu_get_lpf(unsigned short *lpf)
 {
     switch (st.chip_cfg.lpf) {
     case INV_FILTER_188HZ:
@@ -1276,7 +1276,7 @@ int mpu_get_lpf(unsigned short *lpf)
  *  @param[in]  lpf Desired LPF setting.
  *  @return     0 if successful.
  */
-int mpu_set_lpf(unsigned short lpf)
+int8_t mpu_set_lpf(unsigned short lpf)
 {
     unsigned char data;
 
@@ -1309,7 +1309,7 @@ int mpu_set_lpf(unsigned short lpf)
  *  @param[out] rate    Current sampling rate (Hz).
  *  @return     0 if successful.
  */
-int mpu_get_sample_rate(unsigned short *rate)
+int8_t mpu_get_sample_rate(unsigned short *rate)
 {
     if (st.chip_cfg.dmp_on)
         return -1;
@@ -1324,7 +1324,7 @@ int mpu_get_sample_rate(unsigned short *rate)
  *  @param[in]  rate    Desired sampling rate (Hz).
  *  @return     0 if successful.
  */
-int mpu_set_sample_rate(unsigned short rate)
+int8_t mpu_set_sample_rate(unsigned short rate)
 {
     unsigned char data;
 
@@ -1371,7 +1371,7 @@ int mpu_set_sample_rate(unsigned short rate)
  *  @param[out] rate    Current compass sampling rate (Hz).
  *  @return     0 if successful.
  */
-int mpu_get_compass_sample_rate(unsigned short *rate)
+int8_t mpu_get_compass_sample_rate(unsigned short *rate)
 {
 #ifdef AK89xx_SECONDARY
     rate[0] = st.chip_cfg.compass_sample_rate;
@@ -1393,7 +1393,7 @@ int mpu_get_compass_sample_rate(unsigned short *rate)
  *  @param[in]  rate    Desired compass sampling rate (Hz).
  *  @return     0 if successful.
  */
-int mpu_set_compass_sample_rate(unsigned short rate)
+int8_t mpu_set_compass_sample_rate(unsigned short rate)
 {
 #ifdef AK89xx_SECONDARY
     unsigned char div;
@@ -1415,7 +1415,7 @@ int mpu_set_compass_sample_rate(unsigned short rate)
  *  @param[out] sens    Conversion from hardware units to dps.
  *  @return     0 if successful.
  */
-int mpu_get_gyro_sens(float *sens)
+int8_t mpu_get_gyro_sens(float *sens)
 {
     switch (st.chip_cfg.gyro_fsr) {
     case INV_FSR_250DPS:
@@ -1441,7 +1441,7 @@ int mpu_get_gyro_sens(float *sens)
  *  @param[out] sens    Conversion from hardware units to g's.
  *  @return     0 if successful.
  */
-int mpu_get_accel_sens(unsigned short *sens)
+int8_t mpu_get_accel_sens(unsigned short *sens)
 {
     switch (st.chip_cfg.accel_fsr) {
     case INV_FSR_2G:
@@ -1473,7 +1473,7 @@ int mpu_get_accel_sens(unsigned short *sens)
  *  @param[out] sensors Mask of sensors in FIFO.
  *  @return     0 if successful.
  */
-int mpu_get_fifo_config(unsigned char *sensors)
+int8_t mpu_get_fifo_config(unsigned char *sensors)
 {
     sensors[0] = st.chip_cfg.fifo_enable;
     return 0;
@@ -1488,10 +1488,10 @@ int mpu_get_fifo_config(unsigned char *sensors)
  *  @param[in]  sensors Mask of sensors to push to FIFO.
  *  @return     0 if successful.
  */
-int mpu_configure_fifo(unsigned char sensors)
+int8_t mpu_configure_fifo(unsigned char sensors)
 {
     unsigned char prev;
-    int result = 0;
+    int8_t result = 0;
 
     /* Compass data isn't going into the FIFO. Stop trying. */
     sensors &= ~INV_XYZ_COMPASS;
@@ -1530,7 +1530,7 @@ int mpu_configure_fifo(unsigned char sensors)
  *  @param[in]  power_on    1 if turned on, 0 if suspended.
  *  @return     0 if successful.
  */
-int mpu_get_power_state(unsigned char *power_on)
+int8_t mpu_get_power_state(unsigned char *power_on)
 {
     if (st.chip_cfg.sensors)
         power_on[0] = 1;
@@ -1549,7 +1549,7 @@ int mpu_get_power_state(unsigned char *power_on)
  *  @param[in]  sensors    Mask of sensors to wake.
  *  @return     0 if successful.
  */
-int mpu_set_sensors(unsigned char sensors)
+int8_t mpu_set_sensors(unsigned char sensors)
 {
     unsigned char data;
 #ifdef AK89xx_SECONDARY
@@ -1626,7 +1626,7 @@ int mpu_set_sensors(unsigned char sensors)
  *  @param[out] status  Mask of interrupt bits.
  *  @return     0 if successful.
  */
-int mpu_get_int_status(short *status)
+int8_t mpu_get_int_status(short *status)
 {
     unsigned char tmp[2];
     if (!st.chip_cfg.sensors)
@@ -1655,7 +1655,7 @@ int mpu_get_int_status(short *status)
  *  @param[out] more        Number of remaining packets.
  *  @return     0 if successful.
  */
-int mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
+int8_t mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
         unsigned char *sensors, unsigned char *more)
 {
     /* Assumes maximum packet size is gyro (6) + accel (6). */
@@ -1736,7 +1736,7 @@ int mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
  *  @param[in]  data    FIFO packet.
  *  @param[in]  more    Number of remaining packets.
  */
-int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
+int8_t mpu_read_fifo_stream(unsigned short length, unsigned char *data,
     unsigned char *more)
 {
     unsigned char tmp[2];
@@ -1774,7 +1774,7 @@ int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
  *  @param[in]  bypass_on   1 to enable bypass mode.
  *  @return     0 if successful.
  */
-int mpu_set_bypass(unsigned char bypass_on)
+int8_t mpu_set_bypass(unsigned char bypass_on)
 {
     unsigned char tmp;
 
@@ -1824,7 +1824,7 @@ int mpu_set_bypass(unsigned char bypass_on)
  *  @param[in]  active_low  1 for active low, 0 for active high.
  *  @return     0 if successful.
  */
-int mpu_set_int_level(unsigned char active_low)
+int8_t mpu_set_int_level(unsigned char active_low)
 {
     st.chip_cfg.active_low_int = active_low;
     return 0;
@@ -1836,7 +1836,7 @@ int mpu_set_int_level(unsigned char active_low)
  *  @param[in]  enable  1 to enable, 0 to disable.
  *  @return     0 if successful.
  */
-int mpu_set_int_latched(unsigned char enable)
+int8_t mpu_set_int_latched(unsigned char enable)
 {
     unsigned char tmp;
     if (st.chip_cfg.latched_int == enable)
@@ -1857,7 +1857,7 @@ int mpu_set_int_latched(unsigned char enable)
 }
 
 #ifdef MPU6050
-static int get_accel_prod_shift(float *st_shift)
+static int8_t get_accel_prod_shift(float *st_shift)
 {
     unsigned char tmp[4], shift_code[3], ii;
 
@@ -1882,9 +1882,9 @@ static int get_accel_prod_shift(float *st_shift)
     return 0;
 }
 
-static int accel_self_test(long *bias_regular, long *bias_st)
+static int8_t accel_self_test(long *bias_regular, long *bias_st)
 {
-    int jj, result = 0;
+    int8_t jj, result = 0;
     float st_shift[3], st_shift_cust, st_shift_var;
 
     get_accel_prod_shift(st_shift);
@@ -1902,9 +1902,9 @@ static int accel_self_test(long *bias_regular, long *bias_st)
     return result;
 }
 
-static int gyro_self_test(long *bias_regular, long *bias_st)
+static int8_t gyro_self_test(long *bias_regular, long *bias_st)
 {
-    int jj, result = 0;
+    int8_t jj, result = 0;
     unsigned char tmp[3];
     float st_shift, st_shift_cust, st_shift_var;
 
@@ -1933,11 +1933,11 @@ static int gyro_self_test(long *bias_regular, long *bias_st)
 
 #endif 
 #ifdef AK89xx_SECONDARY
-static int compass_self_test(void)
+static int8_t compass_self_test(void)
 {
     unsigned char tmp[6];
     unsigned char tries = 10;
-    int result = 0x07;
+    int8_t result = 0x07;
     short data;
 
     mpu_set_bypass(1);
@@ -1997,7 +1997,7 @@ AKM_restore:
 }
 #endif
 
-static int get_st_biases(long *gyro, long *accel, unsigned char hw_test)
+static int8_t get_st_biases(long *gyro, long *accel, unsigned char hw_test)
 {
     unsigned char data[MAX_PACKET_LENGTH];
     unsigned char packet_count, ii;
@@ -2154,9 +2154,9 @@ static const unsigned short mpu_6500_st_tb[256] = {
 	28538,28823,29112,29403,29697,29994,30294,30597,
 	30903,31212,31524,31839,32157,32479,32804,33132
 };
-static int accel_6500_self_test(long *bias_regular, long *bias_st, int debug)
+static int8_t accel_6500_self_test(long *bias_regular, long *bias_st, int8_t debug)
 {
-    int i, result = 0, otp_value_zero = 0;
+    int8_t i, result = 0, otp_value_zero = 0;
     float accel_st_al_min, accel_st_al_max;
     float st_shift_cust[3], st_shift_ratio[3], ct_shift_prod[3], accel_offset_max;
     unsigned char regs[3];
@@ -2244,9 +2244,9 @@ static int accel_6500_self_test(long *bias_regular, long *bias_st, int debug)
     return result;
 }
 
-static int gyro_6500_self_test(long *bias_regular, long *bias_st, int debug)
+static int8_t gyro_6500_self_test(long *bias_regular, long *bias_st, int8_t debug)
 {
-    int i, result = 0, otp_value_zero = 0;
+    int8_t i, result = 0, otp_value_zero = 0;
     float gyro_st_al_max;
     float st_shift_cust[3], st_shift_ratio[3], ct_shift_prod[3], gyro_offset_max;
     unsigned char regs[3];
@@ -2337,7 +2337,7 @@ static int gyro_6500_self_test(long *bias_regular, long *bias_st, int debug)
     return result;
 }
 
-static int get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, int debug)
+static int8_t get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, int8_t debug)
 {
     unsigned char data[HWST_MAX_PACKET_LENGTH];
     unsigned char packet_count, ii;
@@ -2479,7 +2479,7 @@ static int get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, in
  *  @param[in]  debug       Debug flag used to print out more detailed logs. Must first set up logging in Motion Driver.
  *  @return     Result mask (see above).
  */
-int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
+int8_t mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
 {
     const unsigned char tries = 2;
     long gyro_st[3], accel_st[3];
@@ -2489,7 +2489,7 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
 #endif
     int ii;
 
-    int result;
+    int8_t result;
     unsigned char accel_fsr, fifo_sensors, sensors_on;
     unsigned short gyro_fsr, sample_rate, lpf;
     unsigned char dmp_was_on;
@@ -2600,7 +2600,7 @@ restore:
  *  @param[out] accel       Accel biases (if applicable) in q16 format.
  *  @return     Result mask (see above).
  */
-int mpu_run_self_test(long *gyro, long *accel)
+int8_t mpu_run_self_test(long *gyro, long *accel)
 {
 #ifdef MPU6050
     const unsigned char tries = 2;
@@ -2611,7 +2611,7 @@ int mpu_run_self_test(long *gyro, long *accel)
 #endif
     int ii;
 #endif
-    int result;
+    int8_t result;
     unsigned char accel_fsr, fifo_sensors, sensors_on;
     unsigned short gyro_fsr, sample_rate, lpf;
     unsigned char dmp_was_on;
@@ -2704,7 +2704,7 @@ restore:
  *  @param[in]  data        Bytes to write to memory.
  *  @return     0 if successful.
  */
-int mpu_write_mem(unsigned short mem_addr, unsigned short length,
+int8_t mpu_write_mem(unsigned short mem_addr, unsigned short length,
         unsigned char *data)
 {
     unsigned char tmp[2];
@@ -2737,7 +2737,7 @@ int mpu_write_mem(unsigned short mem_addr, unsigned short length,
  *  @param[out] data        Bytes read from memory.
  *  @return     0 if successful.
  */
-int mpu_read_mem(unsigned short mem_addr, unsigned short length,
+int8_t mpu_read_mem(unsigned short mem_addr, unsigned short length,
         unsigned char *data)
 {
     unsigned char tmp[2];
@@ -2769,7 +2769,7 @@ int mpu_read_mem(unsigned short mem_addr, unsigned short length,
  *  @param[in]  sample_rate Fixed sampling rate used when DMP is enabled.
  *  @return     0 if successful.
  */
-int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
+int8_t mpu_load_firmware(unsigned short length, const unsigned char *firmware,
     unsigned short start_addr, unsigned short sample_rate)
 {
     unsigned short ii;
@@ -2816,7 +2816,7 @@ int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
  *  @param[in]  enable  1 to turn on the DMP.
  *  @return     0 if successful.
  */
-int mpu_set_dmp_state(unsigned char enable)
+int8_t mpu_set_dmp_state(unsigned char enable)
 {
     unsigned char tmp;
     if (st.chip_cfg.dmp_on == enable)
@@ -2855,7 +2855,7 @@ int mpu_set_dmp_state(unsigned char enable)
  *  @param[out] enabled 1 if enabled.
  *  @return     0 if successful.
  */
-int mpu_get_dmp_state(unsigned char *enabled)
+int8_t mpu_get_dmp_state(unsigned char *enabled)
 {
     enabled[0] = st.chip_cfg.dmp_on;
     return 0;
@@ -2863,7 +2863,7 @@ int mpu_get_dmp_state(unsigned char *enabled)
 
 #ifdef AK89xx_SECONDARY
 /* This initialization is similar to the one in ak8975.c. */
-static int setup_compass(void)
+static int8_t setup_compass(void)
 {
     unsigned char data[4], akm_addr;
 
@@ -2871,7 +2871,7 @@ static int setup_compass(void)
 
     /* Find compass. Possible addresses range from 0x0C to 0x0F. */
     for (akm_addr = 0x0C; akm_addr <= 0x0F; akm_addr++) {
-        int result;
+        int8_t result;
         result = i2c_read(akm_addr, AKM_REG_WHOAMI, 1, data);
         if (!result && (data[0] == AKM_WHOAMI))
             break;
@@ -2971,7 +2971,7 @@ static int setup_compass(void)
  *  @param[out] timestamp   Timestamp in milliseconds. Null if not needed.
  *  @return     0 if successful.
  */
-int mpu_get_compass_reg(short *data, unsigned long *timestamp)
+int8_t mpu_get_compass_reg(short *data, unsigned long *timestamp)
 {
 #ifdef AK89xx_SECONDARY
     unsigned char tmp[9];
@@ -3024,7 +3024,7 @@ int mpu_get_compass_reg(short *data, unsigned long *timestamp)
  *  @param[out] fsr Current full-scale range.
  *  @return     0 if successful.
  */
-int mpu_get_compass_fsr(unsigned short *fsr)
+int8_t mpu_get_compass_fsr(unsigned short *fsr)
 {
 #ifdef AK89xx_SECONDARY
     fsr[0] = st.hw->compass_fsr;
@@ -3078,7 +3078,7 @@ int mpu_get_compass_fsr(unsigned short *fsr)
  *  @param[in]  lpa_freq    Minimum sampling rate, or zero to disable.
  *  @return     0 if successful.
  */
-int mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
+int8_t mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
     unsigned char lpa_freq)
 {
     unsigned char data[3];

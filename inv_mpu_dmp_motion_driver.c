@@ -456,7 +456,7 @@ static struct dmp_s dmp = {
  *  @brief  Load the DMP with this image.
  *  @return 0 if successful.
  */
-int dmp_load_motion_driver_firmware(void)
+int8_t dmp_load_motion_driver_firmware(void)
 {
     return mpu_load_firmware(DMP_CODE_SIZE, dmp_memory, sStartAddress,
         DMP_SAMPLE_RATE);
@@ -469,7 +469,7 @@ int dmp_load_motion_driver_firmware(void)
  *  @param[in]  orient  Gyro and accel orientation in body frame.
  *  @return     0 if successful.
  */
-int dmp_set_orientation(unsigned short orient)
+int8_t dmp_set_orientation(unsigned short orient)
 {
     unsigned char gyro_regs[3], accel_regs[3];
     const unsigned char gyro_axes[3] = {DINA4C, DINACD, DINA6C};
@@ -524,7 +524,7 @@ int dmp_set_orientation(unsigned short orient)
  *  @param[in]  bias    Gyro biases in q16.
  *  @return     0 if successful.
  */
-int dmp_set_gyro_bias(long *bias)
+int8_t dmp_set_gyro_bias(long *bias)
 {
     long gyro_bias_body[3];
     unsigned char regs[4];
@@ -576,7 +576,7 @@ int dmp_set_gyro_bias(long *bias)
  *  @param[in]  bias    Accel biases in q16.
  *  @return     0 if successful.
  */
-int dmp_set_accel_bias(long *bias)
+int8_t dmp_set_accel_bias(long *bias)
 {
     long accel_bias_body[3];
     unsigned char regs[12];
@@ -585,7 +585,7 @@ int dmp_set_accel_bias(long *bias)
 
     mpu_get_accel_sens(&accel_sens);
     accel_sf = (long long)accel_sens << 15;
-    __no_operation();
+    __asm__("nop\n\t");//__no_operation();
 
     accel_bias_body[0] = bias[dmp.orient & 3];
     if (dmp.orient & 4)
@@ -628,7 +628,7 @@ int dmp_set_accel_bias(long *bias)
  *  @param[in]  rate    Desired fifo rate (Hz).
  *  @return     0 if successful.
  */
-int dmp_set_fifo_rate(unsigned short rate)
+int8_t dmp_set_fifo_rate(unsigned short rate)
 {
     const unsigned char regs_end[12] = {DINAFE, DINAF2, DINAAB,
         0xc4, DINAAA, DINAF1, DINADF, DINADF, 0xBB, 0xAF, DINADF, DINADF};
@@ -654,7 +654,7 @@ int dmp_set_fifo_rate(unsigned short rate)
  *  @param[out] rate    Current fifo rate (Hz).
  *  @return     0 if successful.
  */
-int dmp_get_fifo_rate(unsigned short *rate)
+int8_t dmp_get_fifo_rate(unsigned short *rate)
 {
     rate[0] = dmp.fifo_rate;
     return 0;
@@ -667,7 +667,7 @@ int dmp_get_fifo_rate(unsigned short *rate)
  *  @param[in]  thresh  Tap threshold, in mg/ms.
  *  @return     0 if successful.
  */
-int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
+int8_t dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
 {
     unsigned char tmp[4], accel_fsr;
     float scaled_thresh;
@@ -733,7 +733,7 @@ int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
  *  @param[in]  axis    1, 2, and 4 for XYZ, respectively.
  *  @return     0 if successful.
  */
-int dmp_set_tap_axes(unsigned char axis)
+int8_t dmp_set_tap_axes(unsigned char axis)
 {
     unsigned char tmp = 0;
 
@@ -751,7 +751,7 @@ int dmp_set_tap_axes(unsigned char axis)
  *  @param[in]  min_taps    Minimum consecutive taps (1-4).
  *  @return     0 if successful.
  */
-int dmp_set_tap_count(unsigned char min_taps)
+int8_t dmp_set_tap_count(unsigned char min_taps)
 {
     unsigned char tmp;
 
@@ -769,7 +769,7 @@ int dmp_set_tap_count(unsigned char min_taps)
  *  @param[in]  time    Milliseconds between taps.
  *  @return     0 if successful.
  */
-int dmp_set_tap_time(unsigned short time)
+int8_t dmp_set_tap_time(unsigned short time)
 {
     unsigned short dmp_time;
     unsigned char tmp[2];
@@ -785,7 +785,7 @@ int dmp_set_tap_time(unsigned short time)
  *  @param[in]  time    Max milliseconds between taps.
  *  @return     0 if successful.
  */
-int dmp_set_tap_time_multi(unsigned short time)
+int8_t dmp_set_tap_time_multi(unsigned short time)
 {
     unsigned short dmp_time;
     unsigned char tmp[2];
@@ -803,7 +803,7 @@ int dmp_set_tap_time_multi(unsigned short time)
  *  @param[in]  thresh  Gyro threshold in dps.
  *  @return     0 if successful.
  */
-int dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
+int8_t dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
 {
     unsigned char tmp[4];
     long thresh_scaled = sf / 1000 * thresh;
@@ -822,7 +822,7 @@ int dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
  *  @param[in]  time    Time in milliseconds.
  *  @return     0 if successful.
  */
-int dmp_set_shake_reject_time(unsigned short time)
+int8_t dmp_set_shake_reject_time(unsigned short time)
 {
     unsigned char tmp[2];
 
@@ -840,7 +840,7 @@ int dmp_set_shake_reject_time(unsigned short time)
  *  @param[in]  time    Time in milliseconds.
  *  @return     0 if successful.
  */
-int dmp_set_shake_reject_timeout(unsigned short time)
+int8_t dmp_set_shake_reject_timeout(unsigned short time)
 {
     unsigned char tmp[2];
 
@@ -855,7 +855,7 @@ int dmp_set_shake_reject_timeout(unsigned short time)
  *  @param[out] count   Number of steps detected.
  *  @return     0 if successful.
  */
-int dmp_get_pedometer_step_count(unsigned long *count)
+int8_t dmp_get_pedometer_step_count(unsigned long *count)
 {
     unsigned char tmp[4];
     if (!count)
@@ -876,7 +876,7 @@ int dmp_get_pedometer_step_count(unsigned long *count)
  *  @param[in]  count   New step count.
  *  @return     0 if successful.
  */
-int dmp_set_pedometer_step_count(unsigned long count)
+int8_t dmp_set_pedometer_step_count(unsigned long count)
 {
     unsigned char tmp[4];
 
@@ -892,7 +892,7 @@ int dmp_set_pedometer_step_count(unsigned long count)
  *  @param[in]  time    Walk time in milliseconds.
  *  @return     0 if successful.
  */
-int dmp_get_pedometer_walk_time(unsigned long *time)
+int8_t dmp_get_pedometer_walk_time(unsigned long *time)
 {
     unsigned char tmp[4];
     if (!time)
@@ -912,7 +912,7 @@ int dmp_get_pedometer_walk_time(unsigned long *time)
  *  a race condition if called while the pedometer is enabled.
  *  @param[in]  time    New walk time in milliseconds.
  */
-int dmp_set_pedometer_walk_time(unsigned long time)
+int8_t dmp_set_pedometer_walk_time(unsigned long time)
 {
     unsigned char tmp[4];
 
@@ -943,7 +943,7 @@ int dmp_set_pedometer_walk_time(unsigned long time)
  *  @param[in]  mask    Mask of features to enable.
  *  @return     0 if successful.
  */
-int dmp_enable_feature(unsigned short mask)
+int8_t dmp_enable_feature(unsigned short mask)
 {
     unsigned char tmp[10];
 
@@ -1067,7 +1067,7 @@ int dmp_enable_feature(unsigned short mask)
  *  @param[out] Mask of enabled features.
  *  @return     0 if successful.
  */
-int dmp_get_enabled_features(unsigned short *mask)
+int8_t dmp_get_enabled_features(unsigned short *mask)
 {
     mask[0] = dmp.feature_mask;
     return 0;
@@ -1082,7 +1082,7 @@ int dmp_get_enabled_features(unsigned short *mask)
  *  @param[in]  enable  1 to enable gyro calibration.
  *  @return     0 if successful.
  */
-int dmp_enable_gyro_cal(unsigned char enable)
+int8_t dmp_enable_gyro_cal(unsigned char enable)
 {
     if (enable) {
         unsigned char regs[9] = {0xb8, 0xaa, 0xb3, 0x8d, 0xb4, 0x98, 0x0d, 0x35, 0x5d};
@@ -1100,7 +1100,7 @@ int dmp_enable_gyro_cal(unsigned char enable)
  *  @param[in]  enable  1 to enable 3-axis quaternion.
  *  @return     0 if successful.
  */
-int dmp_enable_lp_quat(unsigned char enable)
+int8_t dmp_enable_lp_quat(unsigned char enable)
 {
     unsigned char regs[4];
     if (enable) {
@@ -1124,7 +1124,7 @@ int dmp_enable_lp_quat(unsigned char enable)
  *  @param[in]   enable  1 to enable 6-axis quaternion.
  *  @return      0 if successful.
  */
-int dmp_enable_6x_lp_quat(unsigned char enable)
+int8_t dmp_enable_6x_lp_quat(unsigned char enable)
 {
     unsigned char regs[4];
     if (enable) {
@@ -1146,7 +1146,7 @@ int dmp_enable_6x_lp_quat(unsigned char enable)
  *  @param[in]  gesture Gesture data from DMP packet.
  *  @return     0 if successful.
  */
-static int decode_gesture(unsigned char *gesture)
+static int8_t decode_gesture(unsigned char *gesture)
 {
     unsigned char tap, android_orient;
 
@@ -1179,7 +1179,7 @@ static int decode_gesture(unsigned char *gesture)
  *  @param[in]  mode    DMP_INT_GESTURE or DMP_INT_CONTINUOUS.
  *  @return     0 if successful.
  */
-int dmp_set_interrupt_mode(unsigned char mode)
+int8_t dmp_set_interrupt_mode(unsigned char mode)
 {
     const unsigned char regs_continuous[11] =
         {0xd8, 0xb1, 0xb9, 0xf3, 0x8b, 0xa3, 0x91, 0xb6, 0x09, 0xb4, 0xd9};
@@ -1218,7 +1218,7 @@ int dmp_set_interrupt_mode(unsigned char mode)
  *  @param[out] more        Number of remaining packets.
  *  @return     0 if successful.
  */
-int dmp_read_fifo(short *gyro, short *accel, long *quat,
+int8_t dmp_read_fifo(short *gyro, short *accel, long *quat,
     unsigned long *timestamp, short *sensors, unsigned char *more)
 {
     unsigned char fifo_data[MAX_PACKET_LENGTH];
@@ -1314,7 +1314,7 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
  *  @param[in]  func    Callback function.
  *  @return     0 if successful.
  */
-int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
+int8_t dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
 {
     dmp.tap_cb = func;
     return 0;
@@ -1325,7 +1325,7 @@ int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
  *  @param[in]  func    Callback function.
  *  @return     0 if successful.
  */
-int dmp_register_android_orient_cb(void (*func)(unsigned char))
+int8_t dmp_register_android_orient_cb(void (*func)(unsigned char))
 {
     dmp.android_orient_cb = func;
     return 0;

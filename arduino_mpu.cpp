@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-	int i2c_write(unsigned char slave_addr, unsigned char reg_addr,unsigned char length, unsigned char const *data) {
+	int8_t i2c_write(unsigned char slave_addr, unsigned char reg_addr,unsigned char length, unsigned char const *data) {
 		return !I2Cdev::writeBytes(slave_addr,reg_addr,length,(uint8_t *)data);
 	}
 
-	int i2c_read(unsigned char slave_addr, unsigned char reg_addr,unsigned char length, unsigned char *data) {
+	int8_t i2c_read(unsigned char slave_addr, unsigned char reg_addr,unsigned char length, unsigned char *data) {
 		return !I2Cdev::readBytes(slave_addr,reg_addr,length,(uint8_t *)data);
 	}
 

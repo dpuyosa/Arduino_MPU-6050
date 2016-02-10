@@ -31,12 +31,12 @@ extern "C"
 #define INV_XYZ_GYRO    (INV_X_GYRO | INV_Y_GYRO | INV_Z_GYRO)
 #define INV_XYZ_ACCEL   (0x08)
 #define INV_XYZ_COMPASS (0x01)
-
+/*
 struct int_param_s {
     unsigned short interrupt;
     void (*cb)(void*);
 };
-
+*/
 #define MPU_INT_STATUS_DATA_READY       (0x0001)
 #define MPU_INT_STATUS_DMP              (0x0002)
 #define MPU_INT_STATUS_PLL_READY        (0x0004)
@@ -53,78 +53,78 @@ struct int_param_s {
 #define MPU_INT_STATUS_DMP_5            (0x2000)
 
 /* Set up APIs */
-int mpu_init(struct int_param_s *int_param);
-int mpu_init_slave(void);
-int mpu_set_bypass(unsigned char bypass_on);
+int8_t mpu_init(struct int_param_s *int_param);
+int8_t mpu_init_slave(void);
+int8_t mpu_set_bypass(unsigned char bypass_on);
 
 /* Configuration APIs */
-int mpu_lp_accel_mode(unsigned char rate);
-int mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
+int8_t mpu_lp_accel_mode(unsigned char rate);
+int8_t mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
     unsigned char lpa_freq);
-int mpu_set_int_level(unsigned char active_low);
-int mpu_set_int_latched(unsigned char enable);
+int8_t mpu_set_int_level(unsigned char active_low);
+int8_t mpu_set_int_latched(unsigned char enable);
 
-int mpu_set_dmp_state(unsigned char enable);
-int mpu_get_dmp_state(unsigned char *enabled);
+int8_t mpu_set_dmp_state(unsigned char enable);
+int8_t mpu_get_dmp_state(unsigned char *enabled);
 
-int mpu_get_lpf(unsigned short *lpf);
-int mpu_set_lpf(unsigned short lpf);
+int8_t mpu_get_lpf(unsigned short *lpf);
+int8_t mpu_set_lpf(unsigned short lpf);
 
-int mpu_get_gyro_fsr(unsigned short *fsr);
-int mpu_set_gyro_fsr(unsigned short fsr);
+int8_t mpu_get_gyro_fsr(unsigned short *fsr);
+int8_t mpu_set_gyro_fsr(unsigned short fsr);
 
-int mpu_get_accel_fsr(unsigned char *fsr);
-int mpu_set_accel_fsr(unsigned char fsr);
+int8_t mpu_get_accel_fsr(unsigned char *fsr);
+int8_t mpu_set_accel_fsr(unsigned char fsr);
 
-int mpu_get_compass_fsr(unsigned short *fsr);
+int8_t mpu_get_compass_fsr(unsigned short *fsr);
 
-int mpu_get_gyro_sens(float *sens);
-int mpu_get_accel_sens(unsigned short *sens);
+int8_t mpu_get_gyro_sens(float *sens);
+int8_t mpu_get_accel_sens(unsigned short *sens);
 
-int mpu_get_sample_rate(unsigned short *rate);
-int mpu_set_sample_rate(unsigned short rate);
-int mpu_get_compass_sample_rate(unsigned short *rate);
-int mpu_set_compass_sample_rate(unsigned short rate);
+int8_t mpu_get_sample_rate(unsigned short *rate);
+int8_t mpu_set_sample_rate(unsigned short rate);
+int8_t mpu_get_compass_sample_rate(unsigned short *rate);
+int8_t mpu_set_compass_sample_rate(unsigned short rate);
 
-int mpu_get_fifo_config(unsigned char *sensors);
-int mpu_configure_fifo(unsigned char sensors);
+int8_t mpu_get_fifo_config(unsigned char *sensors);
+int8_t mpu_configure_fifo(unsigned char sensors);
 
-int mpu_get_power_state(unsigned char *power_on);
-int mpu_set_sensors(unsigned char sensors);
+int8_t mpu_get_power_state(unsigned char *power_on);
+int8_t mpu_set_sensors(unsigned char sensors);
 
-int mpu_read_gyro_bias(long *gyro_bias);
-int mpu_set_gyro_bias_reg(long * gyro_bias);
-int mpu_read_6050_accel_bias(long *accel_bias);
-int mpu_set_accel_bias_6050_reg(const long *accel_bias);
+int8_t mpu_read_gyro_bias(long *gyro_bias);
+int8_t mpu_set_gyro_bias_reg(long * gyro_bias);
+int8_t mpu_read_6050_accel_bias(long *accel_bias);
+int8_t mpu_set_accel_bias_6050_reg(const long *accel_bias);
 
-int mpu_read_6500_accel_bias(long *accel_bias);
-int mpu_set_accel_bias_6500_reg(const long *accel_bias);
+int8_t mpu_read_6500_accel_bias(long *accel_bias);
+int8_t mpu_set_accel_bias_6500_reg(const long *accel_bias);
 
 /* Data getter/setter APIs */
-int mpu_get_gyro_reg(short *data, unsigned long *timestamp);
-int mpu_get_accel_reg(short *data, unsigned long *timestamp);
-int mpu_get_compass_reg(short *data, unsigned long *timestamp);
-int mpu_get_temperature(long *data, unsigned long *timestamp);
+int8_t mpu_get_gyro_reg(short *data, unsigned long *timestamp);
+int8_t mpu_get_accel_reg(short *data, unsigned long *timestamp);
+int8_t mpu_get_compass_reg(short *data, unsigned long *timestamp);
+int8_t mpu_get_temperature(long *data, unsigned long *timestamp);
 
-int mpu_get_int_status(short *status);
-int mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
+int8_t mpu_get_int_status(short *status);
+int8_t mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
     unsigned char *sensors, unsigned char *more);
-int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
+int8_t mpu_read_fifo_stream(unsigned short length, unsigned char *data,
     unsigned char *more);
-int mpu_reset_fifo(void);
+int8_t mpu_reset_fifo(void);
 
-int mpu_write_mem(unsigned short mem_addr, unsigned short length,
+int8_t mpu_write_mem(unsigned short mem_addr, unsigned short length,
     unsigned char *data);
-int mpu_read_mem(unsigned short mem_addr, unsigned short length,
+int8_t mpu_read_mem(unsigned short mem_addr, unsigned short length,
     unsigned char *data);
-int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
+int8_t mpu_load_firmware(unsigned short length, const unsigned char *firmware,
     unsigned short start_addr, unsigned short sample_rate);
 
-int mpu_reg_dump(void);
-int mpu_read_reg(unsigned char reg, unsigned char *data);
-int mpu_run_self_test(long *gyro, long *accel);
-int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug);
-int mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
+int8_t mpu_reg_dump(void);
+int8_t mpu_read_reg(unsigned char reg, unsigned char *data);
+int8_t mpu_run_self_test(long *gyro, long *accel);
+int8_t mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug);
+int8_t mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
 
 #ifdef __cplusplus
 }
