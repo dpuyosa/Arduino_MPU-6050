@@ -14,7 +14,7 @@
 #define __ARDUINO_MPU__
  
 #define MPU6050
-//#define MPU_EXTRAS //Enable extras: tap, shake, pedometer and android orient
+#define MPU_EXTRAS //Enable extras: tap, shake, pedometer and android orient
 #include <Arduino.h>
 
 #define delay_ms delay
