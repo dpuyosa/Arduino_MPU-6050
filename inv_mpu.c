@@ -930,7 +930,7 @@ int8_t mpu_set_gyro_bias_reg(long *gyro_bias)
 	
     long gyro_reg_bias[3] = {0, 0, 0};
     int8_t i=0;
-    if(mpu_read_6500_gyro_bias(gyro_reg_bias))
+    if(mpu_read_gyro_bias(gyro_reg_bias))
         return -1;
     for(i=0;i<3;i++) {
     	gyro_reg_bias[i] -= gyro_bias[i];
