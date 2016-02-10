@@ -325,6 +325,7 @@ enum lp_accel_rate_e {
 #define BIT_STBY_ZG         (0x01)
 #define BIT_STBY_XYZA       (BIT_STBY_XA | BIT_STBY_YA | BIT_STBY_ZA)
 #define BIT_STBY_XYZG       (BIT_STBY_XG | BIT_STBY_YG | BIT_STBY_ZG)
+#define BIT_ACCL_FC_B       (0x08)
 
 #if defined AK8975_SECONDARY
 #define SUPPORTS_AK89xx_HIGH_SENS   (0x00)
@@ -713,9 +714,9 @@ int8_t mpu_lp_accel_mode(unsigned char rate)
 {
     unsigned char tmp[2];
 
-    if (rate > 40)
-        return -1;
-
+#if defined MPU6500
+    unsigned char data;
+#endif
     if (!rate) {
         mpu_set_int_latched(0);
         tmp[0] = 0;
@@ -926,16 +927,20 @@ int8_t mpu_read_gyro_bias(long *gyro_bias) {
 int8_t mpu_set_gyro_bias_reg(long *gyro_bias)
 {
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
+	
+    long gyro_reg_bias[3] = {0, 0, 0};
     int8_t i=0;
+    if(mpu_read_6500_gyro_bias(gyro_reg_bias))
+        return -1;
     for(i=0;i<3;i++) {
-    	gyro_bias[i]= (-gyro_bias[i]);
+    	gyro_reg_bias[i] -= gyro_bias[i];
     }
-    data[0] = (gyro_bias[0] >> 8) & 0xff;
-    data[1] = (gyro_bias[0]) & 0xff;
-    data[2] = (gyro_bias[1] >> 8) & 0xff;
-    data[3] = (gyro_bias[1]) & 0xff;
-    data[4] = (gyro_bias[2] >> 8) & 0xff;
-    data[5] = (gyro_bias[2]) & 0xff;
+    data[0] = (gyro_reg_bias[0] >> 8) & 0xff;
+    data[1] = (gyro_reg_bias[0]) & 0xff;
+    data[2] = (gyro_reg_bias[1] >> 8) & 0xff;
+    data[3] = (gyro_reg_bias[1]) & 0xff;
+    data[4] = (gyro_reg_bias[2] >> 8) & 0xff;
+    data[5] = (gyro_reg_bias[2]) & 0xff;
     if (i2c_write(st.hw->addr, 0x13, 2, &data[0]))
         return -1;
     if (i2c_write(st.hw->addr, 0x15, 2, &data[2]))
@@ -952,37 +957,27 @@ int8_t mpu_set_gyro_bias_reg(long *gyro_bias)
  *  in +-8G format.
  *  @param[in]  accel_bias  New biases.
  *  @return     0 if successful.
- */
+ */ 
 int8_t mpu_set_accel_bias_6050_reg(const long *accel_bias)
 {
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
     long accel_reg_bias[3] = {0, 0, 0};
-    long mask = 0x0001;
-    unsigned char mask_bit[3] = {0, 0, 0};
-    unsigned char i = 0;
+
     if(mpu_read_6050_accel_bias(accel_reg_bias))
     	return -1;
 
-    //bit 0 of the 2 byte bias is for temp comp
-    //calculations need to compensate for this and not change it
-    for(i=0; i<3; i++) {
-    	if(accel_reg_bias[i]&mask)
-    		mask_bit[i] = 0x01;
-    }
-
-    accel_reg_bias[0] -= accel_bias[0];
-    accel_reg_bias[1] -= accel_bias[1];
-    accel_reg_bias[2] -= accel_bias[2];
+    accel_reg_bias[0] -= (accel_bias[0] & ~1);
+    accel_reg_bias[1] -= (accel_bias[1] & ~1);
+    accel_reg_bias[2] -= (accel_bias[2] & ~1);
 
     data[0] = (accel_reg_bias[0] >> 8) & 0xff;
     data[1] = (accel_reg_bias[0]) & 0xff;
-    data[1] = data[1]|mask_bit[0];
+
     data[2] = (accel_reg_bias[1] >> 8) & 0xff;
     data[3] = (accel_reg_bias[1]) & 0xff;
-    data[3] = data[3]|mask_bit[1];
+
     data[4] = (accel_reg_bias[2] >> 8) & 0xff;
     data[5] = (accel_reg_bias[2]) & 0xff;
-    data[5] = data[5]|mask_bit[2];
 
     if (i2c_write(st.hw->addr, 0x06, 2, &data[0]))
         return -1;
@@ -1003,37 +998,38 @@ int8_t mpu_set_accel_bias_6050_reg(const long *accel_bias)
  *  @param[in]  accel_bias  New biases.
  *  @return     0 if successful.
  */
-int8_t mpu_set_accel_bias_6500_reg(const long *accel_bias)
-{
+int8_t mpu_set_accel_bias_6500_reg(const long *accel_bias) {
+
     unsigned char data[6] = {0, 0, 0, 0, 0, 0};
     long accel_reg_bias[3] = {0, 0, 0};
-    long mask = 0x0001;
-    unsigned char mask_bit[3] = {0, 0, 0};
-    unsigned char i = 0;
+
+
+
 
     if(mpu_read_6500_accel_bias(accel_reg_bias))
-    	return -1;
+        return -1;
 
-    //bit 0 of the 2 byte bias is for temp comp
-    //calculations need to compensate for this
-    for(i=0; i<3; i++) {
-    	if(accel_reg_bias[i]&mask)
-    		mask_bit[i] = 0x01;
-    }
 
-    accel_reg_bias[0] -= accel_bias[0];
-    accel_reg_bias[1] -= accel_bias[1];
-    accel_reg_bias[2] -= accel_bias[2];
+
+
+
+
+
+
+    // Preserve bit 0 of factory value (for temperature compensation)
+    accel_reg_bias[0] -= (accel_bias[0] & ~1);
+    accel_reg_bias[1] -= (accel_bias[1] & ~1);
+    accel_reg_bias[2] -= (accel_bias[2] & ~1);
 
     data[0] = (accel_reg_bias[0] >> 8) & 0xff;
     data[1] = (accel_reg_bias[0]) & 0xff;
-    data[1] = data[1]|mask_bit[0];
+
     data[2] = (accel_reg_bias[1] >> 8) & 0xff;
     data[3] = (accel_reg_bias[1]) & 0xff;
-    data[3] = data[3]|mask_bit[1];
+
     data[4] = (accel_reg_bias[2] >> 8) & 0xff;
     data[5] = (accel_reg_bias[2]) & 0xff;
-    data[5] = data[5]|mask_bit[2];
+
 
     if (i2c_write(st.hw->addr, 0x77, 2, &data[0]))
         return -1;

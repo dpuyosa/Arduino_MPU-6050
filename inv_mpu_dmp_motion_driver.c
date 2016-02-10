@@ -1009,7 +1009,6 @@ int8_t dmp_enable_feature(unsigned short mask)
         mpu_write_mem(CFG_GYRO_RAW_DATA, 4, tmp);
     }
 
-#ifdef MPU_EXTRAS
     if (mask & DMP_FEATURE_TAP) {
         /* Enable tap. */
         tmp[0] = 0xF8;
@@ -1028,6 +1027,7 @@ int8_t dmp_enable_feature(unsigned short mask)
         mpu_write_mem(CFG_20, 1, tmp);
     }
 
+#ifdef MPU_EXTRAS
     if (mask & DMP_FEATURE_ANDROID_ORIENT) {
         tmp[0] = 0xD9;
     } else

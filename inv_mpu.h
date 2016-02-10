@@ -54,13 +54,11 @@ struct int_param_s {
 
 /* Set up APIs */
 int8_t mpu_init(struct int_param_s *int_param);
-int8_t mpu_init_slave(void);
 int8_t mpu_set_bypass(unsigned char bypass_on);
 
 /* Configuration APIs */
 int8_t mpu_lp_accel_mode(unsigned char rate);
-int8_t mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
-    unsigned char lpa_freq);
+int8_t mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time, unsigned char lpa_freq);
 int8_t mpu_set_int_level(unsigned char active_low);
 int8_t mpu_set_int_latched(unsigned char enable);
 
@@ -107,18 +105,13 @@ int8_t mpu_get_compass_reg(short *data, unsigned long *timestamp);
 int8_t mpu_get_temperature(long *data, unsigned long *timestamp);
 
 int8_t mpu_get_int_status(short *status);
-int8_t mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
-    unsigned char *sensors, unsigned char *more);
-int8_t mpu_read_fifo_stream(unsigned short length, unsigned char *data,
-    unsigned char *more);
+int8_t mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp, unsigned char *sensors, unsigned char *more);
+int8_t mpu_read_fifo_stream(unsigned short length, unsigned char *data, unsigned char *more);
 int8_t mpu_reset_fifo(void);
 
-int8_t mpu_write_mem(unsigned short mem_addr, unsigned short length,
-    unsigned char *data);
-int8_t mpu_read_mem(unsigned short mem_addr, unsigned short length,
-    unsigned char *data);
-int8_t mpu_load_firmware(unsigned short length, const unsigned char *firmware,
-    unsigned short start_addr, unsigned short sample_rate);
+int8_t mpu_write_mem(unsigned short mem_addr, unsigned short length, unsigned char *data);
+int8_t mpu_read_mem(unsigned short mem_addr, unsigned short length, unsigned char *data);
+int8_t mpu_load_firmware(unsigned short length, const unsigned char *firmware, unsigned short start_addr, unsigned short sample_rate);
 
 int8_t mpu_reg_dump(void);
 int8_t mpu_read_reg(unsigned char reg, unsigned char *data);
