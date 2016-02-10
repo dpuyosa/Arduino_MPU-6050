@@ -1,44 +1,41 @@
 #include <I2Cdev.h>
 #include <arduino_mpu.h>
 #include <inv_mpu.h>
-//#include <inv_mpu_dmp_motion_driver.h>
 
-const float Q16 = 65536.0;
+volatile bool new_int = false;
+void interrupt(){
+  new_int = true;
+}
 
 float gyro_sens;
 unsigned short accel_sens;
-long temp;
 void setup() {
+  uint8_t errors = 0;
   Serial.begin(115200);
   while(!Serial);
-  Serial.println(mpu_init(NULL));
-  Serial.println(mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL));
-  Serial.println(mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL));
-  //Serial.println(dmp_load_motion_driver_firmware());
-  //Serial.println(mpu_set_dmp_state(1));
-  //Serial.println(dmp_enable_feature(DMP_FEATURE_SEND_RAW_ACCEL|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL));
+  Serial.println("Setting up");
+  struct int_param_s params = { 7, interrupt };
+  errors += mpu_init(&params);
+  errors += mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL);
+  errors += mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL);
   
-  mpu_get_gyro_sens(&gyro_sens);
-  mpu_get_accel_sens(&accel_sens);
+  errors += mpu_get_gyro_sens(&gyro_sens);
+  errors += mpu_get_accel_sens(&accel_sens);
+  errors += mpu_set_sample_rate(4);
+  Serial.print(errors); Serial.println(" errors.");
+
 }
 
-short gyro[3];
-short accel[3];
-//unsigned char more;
-//short sensors;
-//int res;
+short gyro[3], accel[3];
+unsigned char sensors;
 void loop() {
-  delay(800);
-  mpu_get_temperature(&temp, NULL);
-  mpu_get_gyro_reg(gyro, NULL);
-  mpu_get_accel_reg(accel, NULL);
- /* do {
-    res = dmp_read_fifo(gyro,accel,NULL,NULL,&sensors,&more);
-    Serial.print(res);
-  } while (more>1);*/
-  Serial.println();
-  Serial.print("Temp: ");Serial.print(temp/Q16);Serial.println("C");
-  Serial.print("Gyro: ");Serial.print(gyro[0]/gyro_sens);Serial.print(" ");Serial.print(gyro[1]/gyro_sens);Serial.print(" ");Serial.println(gyro[2]/gyro_sens);
-  Serial.print("Acce: ");Serial.print(accel[0]/(float)accel_sens);Serial.print(" ");Serial.print(accel[1]/(float)accel_sens);Serial.print(" ");Serial.println(accel[2]/(float)accel_sens);
-  Serial.println();
+  if(new_int){
+    mpu_get_gyro_reg(gyro, NULL); mpu_get_accel_reg(accel, NULL);
+    if(sensors & INV_XYZ_GYRO)
+      Serial.print("Gyro: ");Serial.print(gyro[0]/gyro_sens);Serial.print(" ");Serial.print(gyro[1]/gyro_sens);Serial.print(" ");Serial.println(gyro[2]/gyro_sens);
+    if(sensors & INV_XYZ_ACCEL)
+      Serial.print("Acce: ");Serial.print(accel[0]/(float)accel_sens);Serial.print(" ");Serial.print(accel[1]/(float)accel_sens);Serial.print(" ");Serial.println(accel[2]/(float)accel_sens);
+    Serial.println();
+    new_int = false;
+  }
 }
