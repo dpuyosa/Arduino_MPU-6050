@@ -1740,27 +1740,27 @@ int8_t mpu_read_fifo_stream(unsigned short length, unsigned char *data,
     if (!st.chip_cfg.dmp_on)
         return -1;
     if (!st.chip_cfg.sensors)
-        return -1;
+        return -2;
 
     if (i2c_read(st.hw->addr, st.reg->fifo_count_h, 2, tmp))
-        return -1;
+        return -3;
     fifo_count = (tmp[0] << 8) | tmp[1];
     if (fifo_count < length) {
         more[0] = 0;
-        return -1;
+        return -4;
     }
     if (fifo_count > (st.hw->max_fifo >> 1)) {
         /* FIFO is 50% full, better check overflow bit. */
         if (i2c_read(st.hw->addr, st.reg->int_status, 1, tmp))
-            return -1;
+            return -5;
         if (tmp[0] & BIT_FIFO_OVERFLOW) {
             mpu_reset_fifo();
-            return -2;
+            return -6;
         }
     }
 
     if (i2c_read(st.hw->addr, st.reg->fifo_r_w, length, data))
-        return -1;
+        return -7;
     more[0] = fifo_count / length - 1;
     return 0;
 }
@@ -2789,18 +2789,18 @@ int8_t mpu_load_firmware(unsigned short length, const unsigned char *firmware,
 			firmware_chunk[index] = pgm_read_byte(firmware + ii + index);
 
 		if(mpu_write_mem(ii, this_write, firmware_chunk))
-			return -1;
+			return -2;
 		if (mpu_read_mem(ii, this_write, cur))
-            return -1;
+            return -3;
         if (memcmp(firmware_chunk, cur, this_write))
-            return -2;
+            return -4;
     }
 
     /* Set program start address. */
     tmp[0] = start_addr >> 8;
     tmp[1] = start_addr & 0xFF;
     if (i2c_write(st.hw->addr, st.reg->prgm_start_h, 2, tmp))
-        return -1;
+        return -5;
 
     st.chip_cfg.dmp_loaded = 1;
     st.chip_cfg.dmp_sample_rate = sample_rate;
