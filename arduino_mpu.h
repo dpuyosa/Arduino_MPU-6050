@@ -13,7 +13,7 @@
 #ifndef __ARDUINO_MPU__
 #define __ARDUINO_MPU__
  
-#define MPU6050
+#define MPU6050 
 #define MPU_EXTRAS //Enable extras: tap, shake, pedometer and android orient
 #include <Arduino.h>
 
