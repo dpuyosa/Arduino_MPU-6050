@@ -435,7 +435,7 @@ static const unsigned short sStartAddress = 0x0400;
 #endif
 
 struct dmp_s {
-    void (*tap_cb)(unsigned char count, unsigned char direction);
+    void (*tap_cb)(unsigned char direction, unsigned char count);
     void (*android_orient_cb)(unsigned char orientation);
     unsigned short orient;
     unsigned short feature_mask;
@@ -1230,8 +1230,9 @@ int8_t dmp_read_fifo(short *gyro, short *accel, long *quat,
     sensors[0] = 0;
 
     /* Get a packet. */
-    if (mpu_read_fifo_stream(dmp.packet_length, fifo_data, more))
-        return -1;
+    int8_t output = mpu_read_fifo_stream(dmp.packet_length, fifo_data, more);
+    if (output)
+        return output*10;
 
     /* Parse DMP packet. */
     if (dmp.feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
@@ -1267,7 +1268,7 @@ int8_t dmp_read_fifo(short *gyro, short *accel, long *quat,
             /* Quaternion is outside of the acceptable threshold. */
             mpu_reset_fifo();
             sensors[0] = 0;
-            return -1;
+            return -2;
         }
         sensors[0] |= INV_WXYZ_QUAT;
 #endif
